@@ -11,8 +11,10 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        Timber.plant(Timber.DebugTree())
+
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         custom_button.setOnClickListener {
@@ -38,10 +42,19 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            Timber.d("Download received: $id")
+
+            val notificationManager = ContextCompat.getSystemService(
+                application,
+                NotificationManager::class.java
+            ) as NotificationManager
+            notificationManager.sendNotification(application.getString(R.string.notification_description), application)
         }
     }
 
     private fun download() {
+        Timber.d("Starting Request")
+
         val request =
             DownloadManager.Request(Uri.parse(URL))
                 .setTitle(getString(R.string.app_name))
