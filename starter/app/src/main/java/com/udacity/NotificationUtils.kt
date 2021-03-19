@@ -10,7 +10,7 @@ private val NOTIFICATION_ID = 0
 fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
     val builder = NotificationCompat.Builder(
         applicationContext,
-        applicationContext.getString(R.id.notification_channel_id)
+        applicationContext.getString(R.string.download_notification_channel_id)
     )
 
     builder.setSmallIcon(R.drawable.ic_assistant_black_24dp)

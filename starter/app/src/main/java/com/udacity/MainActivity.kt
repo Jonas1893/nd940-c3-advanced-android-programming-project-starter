@@ -1,13 +1,16 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -37,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         custom_button.setOnClickListener {
             download()
         }
+
+        createChannel(
+            getString(R.string.download_notification_channel_id),
+            getString(R.string.download_notification_channel_name)
+        )
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -44,10 +52,7 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             Timber.d("Download received: $id")
 
-            val notificationManager = ContextCompat.getSystemService(
-                application,
-                NotificationManager::class.java
-            ) as NotificationManager
+            val notificationManager = getSystemNotificationManager()
             notificationManager.sendNotification(application.getString(R.string.notification_description), application)
         }
     }
@@ -66,6 +71,32 @@ class MainActivity : AppCompatActivity() {
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.BLUE
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = getString(R.string.notification_description)
+
+            val notificationManager = getSystemNotificationManager()
+            notificationManager.createNotificationChannel(notificationChannel)
+
+        }
+    }
+
+    private fun getSystemNotificationManager(): NotificationManager {
+        return ContextCompat.getSystemService(
+            application,
+            NotificationManager::class.java
+        ) as NotificationManager
     }
 
     companion object {
