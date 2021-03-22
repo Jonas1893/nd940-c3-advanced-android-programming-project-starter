@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 private val NOTIFICATION_ID = 0
 
 
-fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
+fun NotificationManager.sendNotification(contentPendingIntent: PendingIntent, messageBody: String, applicationContext: Context) {
 
     // let's cancel all pending notifications each time we schedule a new notification
     cancelNotifications()
@@ -18,8 +18,6 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         applicationContext,
         applicationContext.getString(R.string.download_notification_channel_id)
     )
-
-    val contentPendingIntent = buildPendingIntent(applicationContext)
 
     builder.setSmallIcon(R.drawable.ic_assistant_black_24dp)
         .setContentTitle(applicationContext.getString(R.string.notification_title))
@@ -35,8 +33,10 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     notify(NOTIFICATION_ID, builder.build())
 }
 
-private fun buildPendingIntent(applicationContext: Context): PendingIntent? {
+fun NotificationManager.buildPendingIntent(applicationContext: Context, downloadStatus: DownloadStatus): PendingIntent {
     val contentIntent = Intent(applicationContext, DetailActivity::class.java)
+    contentIntent.putExtra("DOWNLOAD_STATUS", downloadStatus.toString())
+
     return PendingIntent.getActivity(
         applicationContext,
         NOTIFICATION_ID,
@@ -44,6 +44,12 @@ private fun buildPendingIntent(applicationContext: Context): PendingIntent? {
         PendingIntent.FLAG_UPDATE_CURRENT
     )
 }
+
+fun NotificationManager.buildAction(applicationContext: Context, pendingIntent: PendingIntent) = NotificationCompat.Action(
+    R.drawable.ic_assistant_black_24dp,
+    applicationContext.getString(R.string.notification_button),
+    pendingIntent
+)
 
 private fun NotificationManager.cancelNotifications() {
     cancelAll()

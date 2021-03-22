@@ -36,11 +36,17 @@ class MainActivity : AppCompatActivity() {
 
         Timber.plant(Timber.DebugTree())
 
+        setupNotifications()
+
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         custom_button.setOnClickListener {
             download()
         }
+    }
+
+    private fun setupNotifications() {
+        notificationManager = getSystemNotificationManager()
 
         createChannel(
             getString(R.string.download_notification_channel_id),
@@ -50,16 +56,47 @@ class MainActivity : AppCompatActivity() {
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (id == downloadID) {
-                Timber.d("Download received: $id")
+            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: return
+            val downloadStatus = mapDownloadStatus(id) ?: return
 
-                Toast.makeText(applicationContext, "Download complete", Toast.LENGTH_SHORT).show()
+            if (id == downloadID && mapDownloadStatus(id) != null) {
 
-                val notificationManager = getSystemNotificationManager()
-                notificationManager.sendNotification(application.getString(R.string.notification_description), application)
+                sendToast(downloadStatus)
+
+                val intent = notificationManager.buildPendingIntent(applicationContext, downloadStatus)
+                pendingIntent = intent
+                action = notificationManager.buildAction(applicationContext, pendingIntent)
+                notificationManager.sendNotification(pendingIntent, application.getString(R.string.notification_description), application)
             }
         }
+    }
+
+    private fun sendToast(downloadStatus: DownloadStatus) {
+        if (downloadStatus == DownloadStatus.COMPLETED) {
+            Toast.makeText(applicationContext, "Download completed successfully", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(applicationContext, "Download failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun mapDownloadStatus(id: Long) : DownloadStatus? {
+        val query = DownloadManager.Query()
+        query.setFilterById(id)
+        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        val cursor = downloadManager.query(query)
+
+        if (cursor.moveToFirst()){
+            when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                DownloadManager.STATUS_SUCCESSFUL -> {
+                    return DownloadStatus.COMPLETED
+                }
+                DownloadManager.STATUS_FAILED -> {
+                    return DownloadStatus.FAILED
+                }
+            }
+        }
+
+        return null
     }
 
     private fun download() {
@@ -91,7 +128,6 @@ class MainActivity : AppCompatActivity() {
             notificationChannel.enableVibration(true)
             notificationChannel.description = getString(R.string.notification_description)
 
-            val notificationManager = getSystemNotificationManager()
             notificationManager.createNotificationChannel(notificationChannel)
 
         }
