@@ -3,8 +3,12 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -15,19 +19,42 @@ class LoadingButton @JvmOverloads constructor(
 
     private val valueAnimator = ValueAnimator()
 
+    private var backgroundColorValue = 0
+    private var textColorValue = 0
+
+    private val buttonText = resources.getString(R.string.button_name)
+    private var textBounds = Rect()
+
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 
     }
 
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        textSize = 55.0f
+        typeface = Typeface.create( "", Typeface.BOLD)
+    }
+
 
     init {
-
+        context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
+            backgroundColorValue = getColor(R.styleable.LoadingButton_backgroundColor, 0)
+            textColorValue = getColor(R.styleable.LoadingButton_textColor, 0)
+        }
     }
 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
+        paint.color = backgroundColorValue
+        canvas?.drawRect(0.0F, 0.0F, widthSize.toFloat(), heightSize.toFloat(), paint)
+
+        paint.color = textColorValue
+
+        paint.getTextBounds(buttonText, 0, buttonText.length, textBounds);
+        canvas?.drawText(buttonText, (widthSize / 2).toFloat(), (heightSize / 2 - textBounds.exactCenterY()), paint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
