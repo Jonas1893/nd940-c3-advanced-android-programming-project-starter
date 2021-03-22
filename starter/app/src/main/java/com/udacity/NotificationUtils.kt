@@ -33,9 +33,12 @@ fun NotificationManager.sendNotification(contentPendingIntent: PendingIntent, me
     notify(NOTIFICATION_ID, builder.build())
 }
 
-fun NotificationManager.buildPendingIntent(applicationContext: Context, downloadStatus: DownloadStatus): PendingIntent {
+fun NotificationManager.buildPendingIntent(applicationContext: Context,
+                                           downloadStatus: DownloadStatus,
+                                           fileName: String): PendingIntent {
     val contentIntent = Intent(applicationContext, DetailActivity::class.java)
     contentIntent.putExtra("DOWNLOAD_STATUS", downloadStatus.toString())
+    contentIntent.putExtra("FILE_NAME", fileName)
 
     return PendingIntent.getActivity(
         applicationContext,

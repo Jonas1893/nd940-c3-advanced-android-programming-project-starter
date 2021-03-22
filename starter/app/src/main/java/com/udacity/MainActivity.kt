@@ -12,6 +12,8 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -63,7 +65,13 @@ class MainActivity : AppCompatActivity() {
 
                 sendToast(downloadStatus)
 
-                val intent = notificationManager.buildPendingIntent(applicationContext, downloadStatus)
+                val radioGroup = findViewById<RadioGroup>(R.id.radio_group)
+                val checkedRadioButton = findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+
+                val intent = notificationManager.buildPendingIntent(applicationContext,
+                    downloadStatus,
+                    checkedRadioButton.text.toString()
+                )
                 pendingIntent = intent
                 action = notificationManager.buildAction(applicationContext, pendingIntent)
                 notificationManager.sendNotification(pendingIntent, application.getString(R.string.notification_description), application)
