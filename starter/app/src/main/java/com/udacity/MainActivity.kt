@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -20,6 +21,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_main.view.*
 import timber.log.Timber
 
 
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
+    private lateinit var button: LoadingButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +112,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun download() {
         Timber.d("Starting Request")
+
+        custom_button.buttonState = ButtonState.Loading
 
         val request =
             DownloadManager.Request(Uri.parse(URL))

@@ -13,6 +13,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import androidx.core.content.withStyledAttributes
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -24,16 +25,19 @@ class LoadingButton @JvmOverloads constructor(
     private val valueAnimator = ValueAnimator()
 
     private var backgroundColorValue = 0
+    private var backgroundLoadingColorValue = 0
     private var textColorValue = 0
 
     private val buttonText = resources.getString(R.string.button_name)
+    private val buttonLoadingText = resources.getString(R.string.button_loading)
+
     private var textBounds = Rect()
 
     // progress value when loading
     // between 0.0 and 1.0
     private var progress: Float = 0.0F
 
-    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
+    var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
         if (buttonState == ButtonState.Initial || buttonState == ButtonState.Completed) {
             reset()
         } else if (buttonState == ButtonState.Loading) {
@@ -57,12 +61,8 @@ class LoadingButton @JvmOverloads constructor(
     private fun reset() {
         progress = 0.0F
         isClickable = true
-        cancelAnimator()
+        valueAnimator.cancel()
         invalidate()
-    }
-
-    private fun cancelAnimator() {
-        TODO("Not yet implemented")
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -76,6 +76,7 @@ class LoadingButton @JvmOverloads constructor(
     init {
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
             backgroundColorValue = getColor(R.styleable.LoadingButton_backgroundColor, 0)
+            backgroundLoadingColorValue = getColor(R.styleable.LoadingButton_loadingColor, 0)
             textColorValue = getColor(R.styleable.LoadingButton_textColor, 0)
         }
     }
@@ -85,7 +86,12 @@ class LoadingButton @JvmOverloads constructor(
         super.onDraw(canvas)
 
         canvas?.save()
-        drawButton(ButtonState.Initial, canvas)
+        paint.color = backgroundColorValue
+        canvas?.drawRect(0.0F, 0.0F, widthSize.toFloat(), heightSize.toFloat(), paint)
+        canvas?.restore()
+
+        canvas?.save()
+        drawButton(buttonState, canvas)
         canvas?.restore()
     }
 
@@ -104,22 +110,20 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun drawButton(state: ButtonState, canvas: Canvas?) {
         if (state == ButtonState.Initial || state == ButtonState.Completed) {
-            paint.color = backgroundColorValue
-            canvas?.drawRect(0.0F, 0.0F, widthSize.toFloat(), heightSize.toFloat(), paint)
-
-            drawButtonText(canvas)
+            drawButtonText(buttonText, canvas)
         } else if (state == ButtonState.Loading) {
+            paint.color = backgroundLoadingColorValue
             canvas?.drawRect(0.0F, 0.0F, progress * width.toFloat(), height.toFloat(), paint)
 
-            drawButtonText(canvas)
+            drawButtonText(buttonLoadingText, canvas)
             drawCircle(canvas)
         }
     }
 
-    private fun drawButtonText(canvas: Canvas?) {
+    private fun drawButtonText(text: String, canvas: Canvas?) {
         paint.color = textColorValue
-        paint.getTextBounds(buttonText, 0, buttonText.length, textBounds);
-        canvas?.drawText(buttonText, (widthSize / 2).toFloat(), (heightSize / 2 - textBounds.exactCenterY()), paint)
+        paint.getTextBounds(text, 0, text.length, textBounds);
+        canvas?.drawText(text, (widthSize / 2).toFloat(), (heightSize / 2 - textBounds.exactCenterY()), paint)
     }
 
     private fun drawCircle(canvas: Canvas?) {
