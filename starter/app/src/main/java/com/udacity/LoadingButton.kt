@@ -48,7 +48,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun startAnimator() {
         valueAnimator.setFloatValues(0.0F, 1.0F)
-        valueAnimator.duration = 2300
+        valueAnimator.duration = 1300
         valueAnimator.interpolator = DecelerateInterpolator()
         valueAnimator.addUpdateListener { animator ->
             progress = animator.animatedValue as Float
