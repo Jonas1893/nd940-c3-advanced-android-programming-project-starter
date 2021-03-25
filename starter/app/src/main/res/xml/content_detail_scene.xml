@@ -21,7 +21,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:alpha="0.0"/>
         <Constraint
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -74,7 +75,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:alpha="1.0"/>
         <Constraint
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -112,5 +114,5 @@
         app:autoTransition="animateToEnd"
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="1800"/>
+        app:duration="1200"/>
 </MotionScene>
