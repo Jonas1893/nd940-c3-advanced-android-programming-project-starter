@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 
-private val NOTIFICATION_ID = 0
+val NOTIFICATION_ID = 0
 
 
 fun NotificationManager.sendNotification(contentPendingIntent: PendingIntent, messageBody: String, applicationContext: Context) {
@@ -20,15 +20,15 @@ fun NotificationManager.sendNotification(contentPendingIntent: PendingIntent, me
     )
 
     builder.setSmallIcon(R.drawable.ic_assistant_black_24dp)
-        .setContentTitle(applicationContext.getString(R.string.notification_title))
-        .setContentText(messageBody)
-        .setAutoCancel(true)
-        .addAction(
-            R.drawable.ic_assistant_black_24dp,
-            applicationContext.getString(R.string.notification_button),
-            contentPendingIntent
-        )
-
+            .setContentTitle(applicationContext.getString(R.string.notification_title))
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .addAction(
+                R.drawable.ic_assistant_black_24dp,
+                applicationContext.getString(R.string.notification_button),
+                contentPendingIntent
+            )
 
     notify(NOTIFICATION_ID, builder.build())
 }

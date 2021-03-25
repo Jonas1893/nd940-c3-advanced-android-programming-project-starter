@@ -1,10 +1,12 @@
 package com.udacity
 
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity() {
@@ -28,6 +30,16 @@ class DetailActivity : AppCompatActivity() {
         okButton.setOnClickListener {
             finish()
         }
+
+        val notificationManager = getSystemNotificationManager()
+        notificationManager.cancel(NOTIFICATION_ID)
+    }
+
+    private fun getSystemNotificationManager(): NotificationManager {
+        return ContextCompat.getSystemService(
+                application,
+                NotificationManager::class.java
+        ) as NotificationManager
     }
 
 }
