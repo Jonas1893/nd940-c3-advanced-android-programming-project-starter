@@ -55,6 +55,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        unregisterReceiver(receiver)
+    }
+
     private fun setupNotifications() {
         notificationManager = getSystemNotificationManager()
 
@@ -71,12 +77,12 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: return
             val downloadStatus = mapDownloadStatus(id) ?: return
 
-            if (id == downloadID && mapDownloadStatus(id) != null) {
+            val radioGroup = findViewById<RadioGroup>(R.id.radio_group)
+            val checkedRadioButton = findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+
+            if (id == downloadID && mapDownloadStatus(id) != null && checkedRadioButton != null) {
 
                 sendToast(downloadStatus)
-
-                val radioGroup = findViewById<RadioGroup>(R.id.radio_group)
-                val checkedRadioButton = findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
 
                 val intent = notificationManager.buildPendingIntent(applicationContext,
                     downloadStatus,
