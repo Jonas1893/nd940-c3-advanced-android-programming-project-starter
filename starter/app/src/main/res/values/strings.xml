@@ -23,4 +23,7 @@
     <string name="statusTextViewTitle">Status:</string>
 
     <string name="ok_button_text">OK</string>
+    <string name="toast_select_file_to_download">Please select the file to download</string>
+    <string name="toast_download_success">Download completed successfully</string>
+    <string name="toast_download_failure">Download failed</string>
 </resources>

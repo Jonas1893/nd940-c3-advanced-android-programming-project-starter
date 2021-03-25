@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
-    private lateinit var button: LoadingButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +45,13 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         custom_button.setOnClickListener {
-            download()
+            if (radio_group.checkedRadioButtonId == -1) {
+                Toast.makeText(applicationContext,
+                        getString(R.string.toast_select_file_to_download),
+                        Toast.LENGTH_SHORT).show()
+            } else {
+                download()
+            }
         }
     }
 
@@ -86,9 +91,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendToast(downloadStatus: DownloadStatus) {
         if (downloadStatus == DownloadStatus.COMPLETED) {
-            Toast.makeText(applicationContext, "Download completed successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.toast_download_success), Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(applicationContext, "Download failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.toast_download_failure), Toast.LENGTH_SHORT).show()
         }
     }
 
