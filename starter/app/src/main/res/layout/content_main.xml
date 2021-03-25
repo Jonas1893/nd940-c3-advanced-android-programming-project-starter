@@ -50,6 +50,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:backgroundColor="@color/colorPrimary"
         app:textColor="@color/white"
-        app:loadingColor="@color/colorPrimaryDark"/>
+        app:loadingColor="@color/colorPrimaryDark"
+        app:arcColor="@color/colorAccent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

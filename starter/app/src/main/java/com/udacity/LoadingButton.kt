@@ -26,6 +26,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private var backgroundColorValue = 0
     private var backgroundLoadingColorValue = 0
+    private var arcLoadingColorValue = 0
     private var textColorValue = 0
 
     private val buttonText = resources.getString(R.string.button_name)
@@ -77,6 +78,7 @@ class LoadingButton @JvmOverloads constructor(
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
             backgroundColorValue = getColor(R.styleable.LoadingButton_backgroundColor, 0)
             backgroundLoadingColorValue = getColor(R.styleable.LoadingButton_loadingColor, 0)
+            arcLoadingColorValue = getColor(R.styleable.LoadingButton_arcColor, 0)
             textColorValue = getColor(R.styleable.LoadingButton_textColor, 0)
         }
     }
@@ -116,7 +118,7 @@ class LoadingButton @JvmOverloads constructor(
             canvas?.drawRect(0.0F, 0.0F, progress * width.toFloat(), height.toFloat(), paint)
 
             drawButtonText(buttonLoadingText, canvas)
-            drawCircle(canvas)
+            drawArc(canvas)
         }
     }
 
@@ -126,10 +128,18 @@ class LoadingButton @JvmOverloads constructor(
         canvas?.drawText(text, (widthSize / 2).toFloat(), (heightSize / 2 - textBounds.exactCenterY()), paint)
     }
 
-    private fun drawCircle(canvas: Canvas?) {
-        val textBounds = paint.getTextBounds(buttonText, 0, buttonText.length, textBounds);
+    private fun drawArc(canvas: Canvas?) {
+        paint.color = arcLoadingColorValue
+        paint.getTextBounds(buttonText, 0, buttonText.length, textBounds);
 
-        //canvas.drawArc()
+        val arcDiam = height * 0.4F
+        val angle = progress * 360
+        val startX = width.toFloat() / 2 + textBounds.width().toFloat()
+        val startY = height / 2 - arcDiam / 2
+        val endX = startX + arcDiam
+        val endY = startY + arcDiam
+
+        canvas?.drawArc(startX, startY, endX, endY, 0.0F, angle, true, paint)
     }
 
 }
